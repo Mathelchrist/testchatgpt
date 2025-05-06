@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 
-const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-
 export default function MealTrackerApp() {
   const [isClient, setIsClient] = useState(false);
   const [completedMeals, setCompletedMeals] = useState({ meal1: false, meal2: false });
   const [notes, setNotes] = useState("");
-  const [calendar, setCalendar] = useState({});
-  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -17,12 +13,6 @@ export default function MealTrackerApp() {
     if (isClient) {
       const savedNotes = localStorage.getItem("mealNotes");
       if (savedNotes) setNotes(savedNotes);
-
-      const savedCalendar = localStorage.getItem("mealCalendar");
-      setCalendar(savedCalendar ? JSON.parse(savedCalendar) : daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: false }), {}));
-
-      const savedHistory = localStorage.getItem("mealHistory");
-      setHistory(savedHistory ? JSON.parse(savedHistory) : []);
     }
   }, [isClient]);
 
@@ -32,29 +22,8 @@ export default function MealTrackerApp() {
     }
   }, [notes, isClient]);
 
-  useEffect(() => {
-    if (isClient) {
-      localStorage.setItem("mealCalendar", JSON.stringify(calendar));
-    }
-  }, [calendar, isClient]);
-
-  useEffect(() => {
-    if (isClient) {
-      localStorage.setItem("mealHistory", JSON.stringify(history));
-    }
-  }, [history, isClient]);
-
   const toggleMeal = (meal) => {
     setCompletedMeals({ ...completedMeals, [meal]: !completedMeals[meal] });
-  };
-
-  const toggleDay = (day) => {
-    const updatedCalendar = { ...calendar, [day]: !calendar[day] };
-    setCalendar(updatedCalendar);
-    if (!calendar[day]) {
-      const today = new Date().toLocaleDateString();
-      setHistory((prev) => [...prev, { day, date: today }]);
-    }
   };
 
   const handleNoteChange = (e) => setNotes(e.target.value);
@@ -117,31 +86,6 @@ export default function MealTrackerApp() {
           placeholder="Ajoute tes remarques ici..."
           style={{ width: '100%', padding: '8px', marginTop: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
         />
-      </div>
-
-      <div style={{ marginTop: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Suivi Hebdomadaire</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
-          {daysOfWeek.map((day) => (
-            <button key={day} onClick={() => toggleDay(day)} style={{
-              padding: '8px 12px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: calendar[day] ? '#d1fae5' : '#fff'
-            }}>
-              {calendar[day] ? `✔️ ${day}` : day}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Historique des jours cochés</h3>
-        <ul style={{ paddingLeft: '20px' }}>
-          {history.map((entry, index) => (
-            <li key={index}>{entry.day} — {entry.date}</li>
-          ))}
-        </ul>
       </div>
     </div>
   );

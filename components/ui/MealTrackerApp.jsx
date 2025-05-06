@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 
 const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -77,46 +74,55 @@ export default function MealTrackerApp() {
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Mon Plan Alimentaire Quotidien</h1>
+    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Mon Plan Alimentaire Quotidien</h1>
 
       {Object.entries(mealPlan).map(([key, meal]) => (
-        <Card key={key} className="border">
-          <CardContent className="space-y-2">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">{meal.title}</h2>
-              <Button onClick={() => toggleMeal(key)} variant={completedMeals[key] ? "secondary" : "default"}>
-                {completedMeals[key] ? "Fait" : "À faire"}
-              </Button>
-            </div>
-            <ul className="list-disc list-inside">
-              {meal.items.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <div key={key} style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', margin: '16px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600' }}>{meal.title}</h2>
+            <button onClick={() => toggleMeal(key)} style={{ padding: '6px 12px' }}>
+              {completedMeals[key] ? "Fait" : "À faire"}
+            </button>
+          </div>
+          <ul>
+            {meal.items.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        </div>
       ))}
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Notes du jour</h3>
-        <Input value={notes} onChange={handleNoteChange} placeholder="Ajoute tes remarques ici..." />
+      <div style={{ marginTop: '24px' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Notes du jour</h3>
+        <input
+          type="text"
+          value={notes}
+          onChange={handleNoteChange}
+          placeholder="Ajoute tes remarques ici..."
+          style={{ width: '100%', padding: '8px', marginTop: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+        />
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Suivi Hebdomadaire</h3>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+      <div style={{ marginTop: '24px' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Suivi Hebdomadaire</h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
           {daysOfWeek.map((day) => (
-            <Button key={day} onClick={() => toggleDay(day)} variant={calendar[day] ? "secondary" : "outline"}>
+            <button key={day} onClick={() => toggleDay(day)} style={{
+              padding: '8px 12px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: calendar[day] ? '#d1fae5' : '#fff'
+            }}>
               {calendar[day] ? `✔️ ${day}` : day}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Historique des jours cochés</h3>
-        <ul className="list-disc list-inside">
+      <div style={{ marginTop: '24px' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Historique des jours cochés</h3>
+        <ul style={{ paddingLeft: '20px' }}>
           {history.map((entry, index) => (
             <li key={index}>{entry.day} — {entry.date}</li>
           ))}

@@ -3,35 +3,46 @@ import { useEffect, useState } from "react";
 const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
 export default function MealTrackerApp() {
+  const [isClient, setIsClient] = useState(false);
   const [completedMeals, setCompletedMeals] = useState({ meal1: false, meal2: false });
   const [notes, setNotes] = useState("");
-  const [calendar, setCalendar] = useState(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("mealCalendar") : null;
-    return saved ? JSON.parse(saved) : daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: false }), {});
-  });
-  const [history, setHistory] = useState(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("mealHistory") : null;
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [calendar, setCalendar] = useState({});
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-    const savedNotes = localStorage.getItem("mealNotes");
-        if (savedNotes) setNotes(savedNotes);
-  }
+    setIsClient(true);
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") localStorage.setItem("mealNotes", notes);
-  }, [notes]);
+    if (isClient) {
+      const savedNotes = localStorage.getItem("mealNotes");
+      if (savedNotes) setNotes(savedNotes);
+
+      const savedCalendar = localStorage.getItem("mealCalendar");
+      setCalendar(savedCalendar ? JSON.parse(savedCalendar) : daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: false }), {}));
+
+      const savedHistory = localStorage.getItem("mealHistory");
+      setHistory(savedHistory ? JSON.parse(savedHistory) : []);
+    }
+  }, [isClient]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") localStorage.setItem("mealCalendar", JSON.stringify(calendar));
-  }, [calendar]);
+    if (isClient) {
+      localStorage.setItem("mealNotes", notes);
+    }
+  }, [notes, isClient]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") localStorage.setItem("mealHistory", JSON.stringify(history));
-  }, [history]);
+    if (isClient) {
+      localStorage.setItem("mealCalendar", JSON.stringify(calendar));
+    }
+  }, [calendar, isClient]);
+
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem("mealHistory", JSON.stringify(history));
+    }
+  }, [history, isClient]);
 
   const toggleMeal = (meal) => {
     setCompletedMeals({ ...completedMeals, [meal]: !completedMeals[meal] });
@@ -74,6 +85,8 @@ export default function MealTrackerApp() {
       ]
     }
   };
+
+  if (!isClient) return null;
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>

@@ -6,29 +6,31 @@ export default function MealTrackerApp() {
   const [completedMeals, setCompletedMeals] = useState({ meal1: false, meal2: false });
   const [notes, setNotes] = useState("");
   const [calendar, setCalendar] = useState(() => {
-    const saved = localStorage.getItem("mealCalendar");
+    const saved = typeof window !== "undefined" ? localStorage.getItem("mealCalendar") : null;
     return saved ? JSON.parse(saved) : daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: false }), {});
   });
   const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem("mealHistory");
+    const saved = typeof window !== "undefined" ? localStorage.getItem("mealHistory") : null;
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
     const savedNotes = localStorage.getItem("mealNotes");
-    if (savedNotes) setNotes(savedNotes);
+        if (savedNotes) setNotes(savedNotes);
+  }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("mealNotes", notes);
+    if (typeof window !== "undefined") localStorage.setItem("mealNotes", notes);
   }, [notes]);
 
   useEffect(() => {
-    localStorage.setItem("mealCalendar", JSON.stringify(calendar));
+    if (typeof window !== "undefined") localStorage.setItem("mealCalendar", JSON.stringify(calendar));
   }, [calendar]);
 
   useEffect(() => {
-    localStorage.setItem("mealHistory", JSON.stringify(history));
+    if (typeof window !== "undefined") localStorage.setItem("mealHistory", JSON.stringify(history));
   }, [history]);
 
   const toggleMeal = (meal) => {
